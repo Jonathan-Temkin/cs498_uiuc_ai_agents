@@ -1,0 +1,4 @@
+*.txt
+claude_api.py
+api_key.txt
+.env
