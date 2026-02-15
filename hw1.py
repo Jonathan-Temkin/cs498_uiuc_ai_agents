@@ -6,7 +6,7 @@ from claude_api import *
 import json
 import re
 import lec4
-
+from tools import * 
 
 def retry_api_call(prompt, api_key, max_retries=3):
     """
@@ -285,9 +285,9 @@ def resilient_agent(prompt, tools, tool_executor, api_key, max_rounds=5):
     return final_response
     
 
-prompt = "add 5 + 17 then divide the sum by 0. If error then divide by 3"
-tools = [define_calc_tool()]
-tool_executor = calculate
+# prompt = "add 5 + 17 then divide the sum by 0. If error then divide by 3"
+# tools = [define_calc_tool()]
+# tool_executor = calculate
 #resilient_agent(prompt, tools, tool_executor, api_key, max_rounds=5)
 #print(call_with_tools(prompt, tools, api_key))
 
