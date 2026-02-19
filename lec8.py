@@ -447,8 +447,12 @@ def cost_optimized_agent(user_query, conversation_history, all_tools, api_key, s
 
 
     conversation_history = truncate_history(conversation_history, max_messages=5)
-    all_tools = filter_tools_by_query(user_query, tools)
-    messages = conversation_history +  [ {"role":"user", "content": messages} ] 
+    all_tools = filter_tools_by_query(user_query, all_tools)
+    messages = conversation_history +  [ {"role":"user", "content": user_query} ] 
     response = claude_api_call(messages, api_key, return_type='json', system_prompt = system_prompt, 
                     tools = all_tools, stop_sequence = None, tool_choice = None, prefill = None, print_response = False,
                     temperature = None)
+    print(response['content'][0]['text'])
+    return response
+
+
