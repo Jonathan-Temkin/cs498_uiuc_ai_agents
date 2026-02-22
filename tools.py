@@ -60,7 +60,7 @@ def generate_tool_schema(name, description, parameters):
             if key == 'required':
                 is_required = param[key]
                 if is_required: required.append(param_name)
-        properties[name] = desc
+        properties[param_name] = desc
     result =  {
         "name": name,
         "description": description,
@@ -116,3 +116,4 @@ def define_search_tool():
         }
     }
     return tool_definition
+
