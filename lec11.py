@@ -390,4 +390,99 @@ handoffs = [
     {"agent": "web_researcher", "summary": "3 new datasets",  "key_findings": ["dataset A", "dataset B"], "char_count": 14},
 ]
 
-print(integrate_subagent_results(handoffs))
+# print(integrate_subagent_results(handoffs))
+
+
+
+def filter_tools_for_agent(agent_role, available_tools):
+    """
+    Return a sorted list of tool names whose 'allowed_roles' includes agent_role.
+
+    Args:
+        agent_role (str): role of the agent
+        available_tools (list[dict]): each dict has 'name' (str) and 'allowed_roles' (list[str])
+
+    Returns:
+        list[str]: sorted list of matching tool names
+    """
+    return filter_tools_for_agent(agent_role, available_tools)
+
+
+
+def build_subagent_dispatch(role, description, tools, context_summary, max_tokens=4096):
+    """
+    Build a dispatch record for launching a sub-agent.
+
+    Returns dict with keys: 'role', 'description', 'tools', 'context_summary', 'max_tokens'
+    Raises ValueError for empty role/description or non-list tools.
+    """
+    return build_subagent_dispatch(role, description, tools, context_summary, max_tokens=4096)
+
+def create_context_handoff(subagent_role, result_text, key_findings, max_summary_chars=500):
+    """
+    Create a distilled context handoff dict.
+
+    Returns dict with keys: 'agent', 'summary', 'key_findings', 'char_count'
+    """
+    return create_context_handoff(subagent_role, result_text, key_findings, max_summary_chars=500)
+
+
+def integrate_subagent_results(handoffs):
+    """
+    Merge multiple sub-agent handoffs into a unified orchestrator context.
+
+    Returns dict with keys: 'agents_consulted', 'combined_summary', 'all_key_findings', 'total_chars'
+    """
+    # TODO: Aggregate and return the integrated result dict.
+    return integrate_subagent_results(handoffs)
+
+
+tool_pool = [
+    {"name": "execute_sql", "allowed_roles": ["data_analyst"]},
+    {"name": "web_search",  "allowed_roles": ["web_researcher"]},
+]
+agent_configs = [
+    {"role": "data_analyst",   "description": "Expert data analyst.",   "keywords": ["analyze", "trend"]},
+    {"role": "web_researcher", "description": "Expert web researcher.", "keywords": ["fetch", "scrape"]},
+]
+
+def run_multi_agent_pipeline(task, agent_configs, tool_pool):
+    """
+    Execute a complete multi-sub-agent pipeline.
+
+    Args:
+        task (str): overall task description
+        agent_configs (list[dict]): each dict has 'role' (str), 'description' (str),
+                                    'keywords' (list[str])
+        tool_pool (list[dict]): shared tool pool, each dict has 'name' and 'allowed_roles'
+
+    Returns:
+        dict with keys: 'dispatches', 'handoffs', 'result'
+
+    Pipeline steps:
+        1. For each config whose keywords match in task (case-insensitive):
+           a. Filter tools: filter_tools_for_agent(role, tool_pool)
+           b. Build dispatch: build_subagent_dispatch(role, description, tools, context_summary=task)
+           c. Simulate execution: result_text = f"{role} completed: {task[:100]}"
+                                  key_findings = [f"{role} processed the task"]
+           d. Create handoff: create_context_handoff(role, result_text, key_findings)
+        2. Integrate all handoffs with integrate_subagent_results(handoffs)
+        3. Return {"dispatches": ..., "handoffs": ..., "result": ...}
+    """
+    handoffs = []
+    dispatches = []
+    for config in agent_configs:
+        keywords = config["keywords"]
+        description = config["description"]
+        if any(keyword for keyword in task):
+            agent_role = config["role"]
+            agent_tools = [tool["name"] for tool in tool_pool if agent_role in tool["allowed_roles"]]
+            filtered_tools = filter_tools_for_agent(agent_role, agent_tools)
+            dispatch = build_subagent_dispatch(agent_role, keywords, filtered_tools, description, max_tokens=4096)
+            dispatches.append(dispatch)
+            result_text = f"{agent_role} completed: {task[:100]}"
+            key_findings = [f"{agent_role} processed the task"]
+            handoff = create_context_handoff(agent_role, result_text, key_findings)
+            handoffs.append(handoff)
+    integrated_results = integrate_subagent_results(handoffs)
+    return {"dispatches": dispatches, "handoffs": handoffs, "result": integrated_results}

@@ -297,3 +297,25 @@ workers = {
 }
 
 print(dispatch_to_worker(task, workers))
+
+
+def choose_architecture(task_properties):
+    """
+    Decide whether to use an agent or workflow architecture.
+
+    Args:
+        task_properties (dict): Properties of the task including predictability,
+                               flexibility requirements, known steps, and complexity
+
+    Returns:
+        str: Either "agent" or "workflow"
+    """
+    predictable = task_properties['predictable']
+    flexible = task_properties['requires_flexibility']
+    steps_known = task_properties['steps_known']
+    complexity =task_properties['complexity']
+    if predictable and steps_known and not flexible:
+        return "workflow"
+    if complexity == 'low' and steps_known:
+        return "workflow"
+    return "agent"

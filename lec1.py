@@ -62,4 +62,4 @@ def call_llm(user_message, api_key):
 
 
 user_message = "tell a really funny joke"
-call_llm(user_message, api_key)
+call_llm(user_message, api_key)s

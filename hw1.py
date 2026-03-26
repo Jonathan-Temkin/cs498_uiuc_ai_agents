@@ -185,14 +185,14 @@ def generate_tool_schema(name, description, parameters):
     return result 
 
 
-# name = "get_temp"
-# description = "Get temperature"
-# parameters = [
-#     {"name": "city", "type": "string", "description": "City name", "required": True},
-#     {"name": "unit", "type": "string", "description": "Unit", "required": False, "enum": ["C", "F"]}
-# ]
+    # name = "get_temp"
+    # description = "Get temperature"
+    # parameters = [
+    #     {"name": "city", "type": "string", "description": "City name", "required": True},
+    #     {"name": "unit", "type": "string", "description": "Unit", "required": False, "enum": ["C", "F"]}
+    # ]
 
-# print(generate_tool_schema(name, description, parameters))
+    # print(generate_tool_schema(name, description, parameters))
 
 
 def extract_entities(text, api_key):
@@ -253,11 +253,12 @@ def resilient_agent(prompt, tools, tool_executor, api_key, max_rounds=5):
         result = resilient_agent("Divide 10 by 2", [divide_tool], my_executor, api_key)
     """
     current_round = 1
+    print(tools)
     stop_reason = "tool_use" 
     messages = [{"role":"user", "content": prompt}]
     while current_round <= max_rounds and stop_reason == "tool_use":
         print(messages)
-        response = call_with_tools(messages, tools, api_key)
+        response = lec4.call_with_tools(messages, tools, api_key)
         print(current_round, response)
         stop_reason = response['stop_reason']
         if stop_reason !="tool_use":
@@ -285,11 +286,11 @@ def resilient_agent(prompt, tools, tool_executor, api_key, max_rounds=5):
     return final_response
     
 
-# prompt = "add 5 + 17 then divide the sum by 0. If error then divide by 3"
-# tools = [define_calc_tool()]
-# tool_executor = calculate
-#resilient_agent(prompt, tools, tool_executor, api_key, max_rounds=5)
-#print(call_with_tools(prompt, tools, api_key))
+prompt = "add 5 + 17 then divide the sum by 0. If error then divide by 3"
+tools = [define_calc_tool()]
+tool_executor = calculate
+resilient_agent(prompt, tools, tool_executor, api_key, max_rounds=5)
+# print(call_with_tools(prompt, tools, api_key))
 
 
 

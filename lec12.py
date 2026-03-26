@@ -489,4 +489,80 @@ def normalize_returns(returns):
     # Step 4: Compute std = variance ** 0.5.
     #
     # Step 5: Return [(r - mean) / std for r in returns].
-    pass
+
+    if returns == []:
+        raise ValueError()
+    mean = sum(returns) / len(returns)
+    variance = sum((r - mean)^2 for r in returns) / len(returns)
+    if variance == 0:
+        raise ValueError()
+    std = variance ** 0.5
+    return [(r - mean) / std for r in returns]
+
+
+
+def run_policy_update(episode_rewards, episode_log_probs, gamma, normalize=True):
+    """
+    Perform a complete REINFORCE policy update step for one episode.
+
+    This function ties together the full RL training pipeline for an LLM agent:
+    1. Given the rewards collected during a coding (or other) task episode and
+       the log-probabilities of the tokens/actions the LLM generated at each step,
+    2. Compute per-step MC returns,
+    3. Optionally normalize them (variance reduction),
+    4. Compute the REINFORCE loss.
+
+    Pipeline:
+        mc_returns   = compute_mc_returns(episode_rewards, gamma)
+        used_returns = normalize_returns(mc_returns)   if normalize=True
+                       mc_returns                      if normalize=False
+                       (if normalize=True but all mc_returns identical → skip normalization)
+        loss         = compute_reinforce_loss(episode_log_probs, used_returns)
+
+    Args:
+        episode_rewards (list of float): rewards at each timestep
+        episode_log_probs (list of float): log-probs of actions taken at each timestep
+        gamma (float): discount factor in [0, 1]
+        normalize (bool): whether to normalize mc_returns before computing loss
+
+    Returns:
+        dict with keys:
+            "mc_returns"    (list of float): raw per-step returns
+            "used_returns"  (list of float): returns fed to the loss function
+                                             (normalized if normalize=True and std>0)
+            "loss"          (float): REINFORCE loss
+
+    Raises:
+        ValueError: if episode_rewards and episode_log_probs have different lengths
+        ValueError: if either list is empty
+        ValueError: if gamma is not in [0, 1]
+    """
+    # TODO: Implement the pipeline:
+    #
+    # Step 1: Validate — raise ValueError if lists are empty or different lengths.
+    #
+    # Step 2: mc_returns = compute_mc_returns(episode_rewards, gamma)
+    #
+    # Step 3: If normalize=True:
+    #     Try: used_returns = normalize_returns(mc_returns)
+    #     Except ValueError: used_returns = mc_returns  (all-zero rewards fallback)
+    #   Else:
+    #     used_returns = mc_returns
+    #
+    # Step 4: loss = compute_reinforce_loss(episode_log_probs, used_returns)
+    #
+    # Step 5: Return {"mc_returns": ..., "used_returns": ..., "loss": ...}
+    if episode_rewards == [] or episode_log_probs == []:
+        raise ValueError()
+    if len(episode_rewards) != len(episode_log_probs):
+        raise ValueError()
+    mc_returns = compute_mc_returns(episode_rewards, gamma)
+    if normalize == True:
+        try:
+            used_returns = normalize_returns(mc_returns)
+        except:
+            used_returns = mc_returns
+    else:
+        used_returns = mc_returns
+    loss = compute_reinforce_loss(episode_log_probs, used_returns)
+    return {"mc_returns": mc_returns, "used_returns": used_returns, "loss": loss}
