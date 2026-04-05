@@ -311,7 +311,7 @@ def tool_call(messages, api_key, system_prompt, stop_sequence):
         # "temperature": 0, # smaller # is more deterministic
         # "messages": [ {"role":"user", "content": prompt},
         #              {"role":"assistant", "content": prefill} ],
-        "stop_sequences" : stop_sequence
+        "stop_sequences" : stop_seq uence
     }
     response = requests.post(url, json=body, headers=headers)
     response = response.json()
